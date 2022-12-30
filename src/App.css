@@ -11,7 +11,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.todo-app-container {
+.task-app-container {
   min-height: 100vh;
   background: #f3f4f6;
 }
@@ -22,7 +22,7 @@ body {
   max-width: 48rem;
 }
 
-.todo-app {
+.task-app {
   margin: auto;
   margin-top: 30px;
   padding: 2rem;
@@ -38,7 +38,7 @@ h2 {
   font-weight: bold;
 }
 
-.todo-input {
+.task-input {
   width: 100%;
   border: none;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -47,18 +47,18 @@ h2 {
   margin-top: 16px;
 }
 
-.todo-list {
+.task-list {
   margin-top: 32px;
 }
 
-.todo-item-container {
+.task-item-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 24px;
 }
 
-.todo-item {
+.task-item {
   display: flex;
   align-items: center;
   flex: 1;
@@ -66,11 +66,11 @@ h2 {
   margin-right: 24px;
 }
 
-.todo-item-label {
+.task-item-label {
   margin-left: 16px;
 }
 
-.todo-item-input {
+.task-item-input {
   margin-left: 8px;
   width: 100%;
   border: none;
