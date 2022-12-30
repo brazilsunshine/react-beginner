@@ -39,17 +39,18 @@ export default class AppClass extends  Component
 
                     <ul className="todo-list">
                         {this.state.todos.map((todo, index ) => (
-                        <li className="todo-item-container">
-                            <div className="todo-item">
-                                <input type="checkbox"/>
-                                <span className="todo-item-label">
-                                  {todo.title}
-                                </span>
-                            </div>
-                            <button className="x-button">
-                                <i className="fa-solid fa-xmark"></i>
-                            </button>
-                        </li>))}
+                            <li className="todo-item-container">
+                                <div className="todo-item">
+                                    <input type="checkbox"/>
+                                    <span className="todo-item-label">
+                                      {todo.title}
+                                    </span>
+                                </div>
+                                <button className="x-button">
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </li>
+                        ))}
                     </ul>
                     <div className="check-all-container">
                         <div>
