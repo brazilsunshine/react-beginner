@@ -12,7 +12,7 @@ function App() {
     {
       id: 2,
       title: 'give sean a slap',
-      isComplete: false,
+      isComplete: true,
     },
     {
       id: 3,
@@ -55,16 +55,38 @@ function App() {
     // 1. make new array of tasks
     // 2. filter method will receive any task
     // 3. the task.id that doesn't match the id coming from the function, will remain on the list
+    // filtre as tasks que nao forem iguais a id vindo da function
     setTasks([... tasks].filter(task => task.id !== id))
   }
 
   /**
-   * Function to hande event when a user adds a task
+   * Function to handle event when a user adds a task
    */
   function handleInput(event)
   {
     setTaskInput(event.target.value); // the event is what the user type on the input
   }
+
+  /**
+   * Complete task from todo list
+   */
+  function completeTask(id)
+  {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === id)
+      {
+        task.isComplete = !task.isComplete
+      }
+
+      return task;
+    })
+
+    setTasks(updatedTasks)
+  }
+
+
+
+
 
   return (
       <div className="task-app-container">
@@ -84,8 +106,9 @@ function App() {
             {tasks.map((task, index ) => (
                 <li key={task.id} className="task-item-container">
                   <div className="task-item">
-                    <input type="checkbox"/>
-                    <span className="task-item-label">
+                    {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
+                    <input type="checkbox" onChange={() => completeTask(task.id)}/>
+                    <span className={`task-item-label ${task.isComplete ? 'line-through' : ''}`}>
                         {task.title}
                       </span>
                   </div>
