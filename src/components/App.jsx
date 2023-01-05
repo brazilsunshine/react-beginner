@@ -8,16 +8,19 @@ function App() {
       id: 1,
       title: 'Finish my homework',
       isComplete: false,
+      isEditing: false,
     },
     {
       id: 2,
       title: 'give sean a slap',
       isComplete: true,
+      isEditing: false,
     },
     {
       id: 3,
       title: 'Brush teeth',
       isComplete: false,
+      isEditing: false,
     },
   ]);
 
@@ -33,7 +36,7 @@ function App() {
     event.preventDefault(); // this will prevent the browser from reload a task is added
 
     if (taskInput.trim().length === 0) // if the whitespace trim() is equal to zero we don't wanna to anything.
-    { // this is to prevent from adding a whitespace as a task
+    { // this is to prevent the user from adding a whitespace as a task
       return;
     }
 
@@ -84,10 +87,70 @@ function App() {
     setTasks(updatedTasks)
   }
 
+  /**
+   * On double-click set isEditing to true and show the <input> tag
+   */
+  function maskAsEditing(id)
+  {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === id)
+      {
+        task.isEditing = true;
+      }
+
+      return task;
+    })
+
+    setTasks(updatedTasks)
+  }
+
+  /**
+   * Update task and set isEditing to false and show the <span> tag
+   */
+  function updateTask(event, id)
+  {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === id)
+      {
+        if (event.target.value.trim().length === 0) // if the whitespace trim() is equal to zero then just return the old task.
+        { // this is to prevent the user from adding a whitespace as a task
+          task.isEditing = false;
+          return task;
+        }
+
+        task.title = event.target.value
+
+        task.isEditing = false;
+      }
+
+      return task;
+    })
+
+    setTasks(updatedTasks)
+  }
+
+  /**
+   * If escape key is pressed cancel the editing task and set isEditing to false
+   */
+  function cancelEditingTask(id)
+  {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === id)
+      {
+        task.isEditing = false;
+      }
+
+      return task;
+    })
+
+    setTasks(updatedTasks)
+  }
 
 
 
-
+  /**
+   *  JSX
+   */
   return (
       <div className="task-app-container">
         <header className="task-app">
@@ -104,16 +167,53 @@ function App() {
 
           <ul className="task-list">
             {tasks.map((task, index ) => (
-                <li key={task.id} className="task-item-container">
+                <li
+                    key={task.id}
+                    className="task-item-container"
+                >
                   <div className="task-item">
                     {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
-                    <input type="checkbox" onChange={() => completeTask(task.id)}/>
-                    <span className={`task-item-label ${task.isComplete ? 'line-through' : ''}`}>
-                        {task.title}
+                    <input
+                        type="checkbox"
+                        onChange={() => completeTask(task.id)}
+                        checked={task.isComplete ? true : false}
+                    />
+
+                    {/*{ !task.isEditing ? (span) : (input)}*/}
+                    {/*If !isEditing is true I want to show the span, if it's false I want to show the input */}
+                    { !task.isEditing ? (
+                      <span
+                          onDoubleClick={() => maskAsEditing(task.id)}
+                          className={`task-item-label ${task.isComplete ? 'line-through' : ''}`}
+                      >
+                          {task.title}
                       </span>
+                    ) : (
+                      <input
+                          type="text"
+                          onBlur={(event) => updateTask(event, task.id)}
+                          onKeyDown={event => {
+                            if (event.key === 'Enter')
+                            {
+                              updateTask(event, task.id);
+                            } else if (event.key === 'Escape')
+                            {
+                              cancelEditingTask(task.id);
+                            }
+                          }}
+                          className="task-item-input"
+                          defaultValue={task.title}
+                          autoFocus
+                      />
+                    )}
+                  {/* onBlur: Every time you get out of focus from the input field, the event will trigger. */}
                   </div>
+
                   {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
-                  <button onClick={() => deleteTask(task.id)} className="x-button">
+                  <button
+                      onClick={() => deleteTask(task.id)}
+                      className="x-button"
+                  >
                     <i className="fa-solid fa-xmark"></i>
                   </button>
                 </li>
@@ -121,10 +221,14 @@ function App() {
           </ul>
           <div className="check-all-container">
             <div>
-              <div className="button">Check All</div>
+              <div className="button">
+                Check All
+              </div>
             </div>
 
-            <span>3 items remaining</span>
+            <span>
+              3 items remaining
+            </span>
           </div>
 
           <div className="other-buttons-container">
@@ -132,11 +236,17 @@ function App() {
               <button className="button filter-button filter-button-active">
                 All
               </button>
-              <button className="button filter-button">Active</button>
-              <button className="button filter-button">Completed</button>
+              <button className="button filter-button">
+                Active
+              </button>
+              <button className="button filter-button">
+                Completed
+              </button>
             </div>
             <div>
-              <button className="button">Clear completed</button>
+              <button className="button">
+                Clear completed
+              </button>
             </div>
           </div>
         </header>
