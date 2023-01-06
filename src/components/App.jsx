@@ -1,5 +1,8 @@
 import React, {useState} from "react";
 import '../App.css';
+import TaskForm from "./TaskForm";
+import TaskList from "./TaskList";
+import NoTasks from './NoTasks';
 
 function App() {
   // think this as getters and setters in vuex
@@ -25,28 +28,19 @@ function App() {
   ]);
 
   // think this as getters and setters in vuex
-  const [taskInput, setTaskInput] = useState('');
   const [idForTask, setIdForTask] = useState(4);
 
   /**
    * Add a task to my task list
    */
-  function addTask(event)
+  function addTask(task)
   {
-    event.preventDefault(); // this will prevent the browser from reload a task is added
-
-    if (taskInput.trim().length === 0) // if the whitespace trim() is equal to zero we don't wanna to anything.
-    { // this is to prevent the user from adding a whitespace as a task
-      return;
-    }
-
     setTasks([...tasks, { // creating a new array with spread syntax and add values to the new array
       id: idForTask,
-      title: taskInput,
+      title: task,
       isComplete: false,
     }]);
 
-    setTaskInput('');
     setIdForTask(prevIdForTask => prevIdForTask + 1); // setIdForTask(idForTask + 1);
   }
 
@@ -60,14 +54,6 @@ function App() {
     // 3. the task.id that doesn't match the id coming from the function, will remain on the list
     // filtre as tasks que nao forem iguais a id vindo da function
     setTasks([... tasks].filter(task => task.id !== id))
-  }
-
-  /**
-   * Function to handle event when a user adds a task
-   */
-  function handleInput(event)
-  {
-    setTaskInput(event.target.value); // the event is what the user type on the input
   }
 
   /**
@@ -90,7 +76,7 @@ function App() {
   /**
    * On double-click set isEditing to true and show the <input> tag
    */
-  function maskAsEditing(id)
+  function markAsEditing(id)
   {
     const updatedTasks = tasks.map(task => {
       if (task.id === id)
@@ -155,100 +141,21 @@ function App() {
       <div className="task-app-container">
         <header className="task-app">
           <h2>Task App</h2>
-          <form onSubmit={addTask}>
-            <input
-                type="text"
-                value={taskInput}
-                onChange={handleInput}
-                className="task-input"
-                placeholder="what do you need to do?"
-            />
-          </form>
+          {/*Here I am passing the addTask function as a prop to the child component*/}
+          <TaskForm addTask={addTask}/>
 
-          <ul className="task-list">
-            {tasks.map((task, index ) => (
-                <li
-                    key={task.id}
-                    className="task-item-container"
-                >
-                  <div className="task-item">
-                    {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
-                    <input
-                        type="checkbox"
-                        onChange={() => completeTask(task.id)}
-                        checked={task.isComplete ? true : false}
-                    />
-
-                    {/*{ !task.isEditing ? (span) : (input)}*/}
-                    {/*If !isEditing is true I want to show the span, if it's false I want to show the input */}
-                    { !task.isEditing ? (
-                      <span
-                          onDoubleClick={() => maskAsEditing(task.id)}
-                          className={`task-item-label ${task.isComplete ? 'line-through' : ''}`}
-                      >
-                          {task.title}
-                      </span>
-                    ) : (
-                      <input
-                          type="text"
-                          onBlur={(event) => updateTask(event, task.id)}
-                          onKeyDown={event => {
-                            if (event.key === 'Enter')
-                            {
-                              updateTask(event, task.id);
-                            } else if (event.key === 'Escape')
-                            {
-                              cancelEditingTask(task.id);
-                            }
-                          }}
-                          className="task-item-input"
-                          defaultValue={task.title}
-                          autoFocus
-                      />
-                    )}
-                  {/* onBlur: Every time you get out of focus from the input field, the event will trigger. */}
-                  </div>
-
-                  {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
-                  <button
-                      onClick={() => deleteTask(task.id)}
-                      className="x-button"
-                  >
-                    <i className="fa-solid fa-xmark"></i>
-                  </button>
-                </li>
-            ))}
-          </ul>
-          <div className="check-all-container">
-            <div>
-              <div className="button">
-                Check All
-              </div>
-            </div>
-
-            <span>
-              3 items remaining
-            </span>
-          </div>
-
-          <div className="other-buttons-container">
-            <div>
-              <button className="button filter-button filter-button-active">
-                All
-              </button>
-              <button className="button filter-button">
-                Active
-              </button>
-              <button className="button filter-button">
-                Completed
-              </button>
-            </div>
-            <div>
-              <button className="button">
-                Clear completed
-              </button>
-            </div>
-          </div>
+              {/*passing these information as props to the TaskList child component*/}
+          { tasks.length > 0
+              ? (<TaskList
+                  tasks={tasks}
+                  completeTask={completeTask}
+                  markAsEditing={markAsEditing}
+                  updateTask={updateTask}
+                  cancelEditingTask={cancelEditingTask}
+                  deleteTask={deleteTask}
+              />)
+              : (<NoTasks />)
+          }
         </header>
       </div>
   );
