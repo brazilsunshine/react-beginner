@@ -1,5 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import TaskItemsRemaining from './TaskItemsRemaining';
+import TaskClearCompletedButton from './TaskClearCompletedButton';
+import CheckAll from "./CheckAll";
+import TaskFilters from "./TaskFilters";
 
 /**
  * Check the props' types and check if this prop is required to have in our component
@@ -8,18 +12,24 @@ import PropTypes from 'prop-types';
  */
 TaskList.propTypes = {
     tasks: PropTypes.array.isRequired,
+    tasksFiltered: PropTypes.func.isRequired,
     completeTask: PropTypes.func.isRequired,
     markAsEditing: PropTypes.func.isRequired,
     updateTask: PropTypes.func.isRequired,
     cancelEditingTask: PropTypes.func.isRequired,
     deleteTask: PropTypes.func.isRequired,
+    remainingTasks: PropTypes.func.isRequired,
+    clearCompleted: PropTypes.func.isRequired,
+    completeAllTasks: PropTypes.func.isRequired,
 }
 
 function TaskList(props) {  // receiving all the props coming in from the parent component
+    const [filter, setFilter] = useState('all')
+
     return (
         <div>
             <ul className="task-list">
-                {props.tasks.map((task, index ) => (
+                {props.tasksFiltered(filter).map((task, index ) => (
                     <li
                         key={task.id}
                         className="task-item-container"
@@ -37,7 +47,10 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                             { !task.isEditing ? (
                                 <span
                                     onDoubleClick={() => props.markAsEditing(task.id)}
-                                    className={`task-item-label ${task.isComplete ? 'line-through' : ''}`}
+                                    className={`task-item-label ${task.isComplete 
+                                        ? 'line-through' 
+                                        : ''
+                                    }`}
                                 >
                                 {task.title}
                             </span>
@@ -74,30 +87,22 @@ function TaskList(props) {  // receiving all the props coming in from the parent
             </ul>
             <div className="check-all-container">
                 <div>
-                    <div className="button">
-                        Check All
-                    </div>
+                    <CheckAll completeAllTasks={props.completeAllTasks}/>
                 </div>
-                <span>
-                    3 items remaining
-                  </span>
+                <div>
+                    <TaskItemsRemaining remainingTasks={props.remainingTasks}/>
+                </div>
             </div>
             <div className="other-buttons-container">
                 <div>
-                    <button className="button filter-button filter-button-active">
-                        All
-                    </button>
-                    <button className="button filter-button">
-                        Active
-                    </button>
-                    <button className="button filter-button">
-                        Completed
-                    </button>
+                    <TaskFilters
+                        tasksFiltered={props.tasksFiltered}
+                        filter={filter}
+                        setFilter={setFilter}
+                    />
                 </div>
                 <div>
-                    <button className="button">
-                        Clear completed
-                    </button>
+                    <TaskClearCompletedButton clearCompleted={props.clearCompleted}/>
                 </div>
             </div>
         </div>
