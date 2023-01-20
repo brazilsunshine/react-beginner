@@ -1,11 +1,14 @@
-import React, {useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import '../App.css';
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import NoTasks from './NoTasks';
+import {logDOM} from "@testing-library/react";
 
 function App() {
     // think this as getters and setters in vuex
+    const [name, setName] = useState('');
+    const nameInputElement = useRef(null);
     const [tasks, setTasks] = useState([
         {
             id: 1,
@@ -148,10 +151,18 @@ function App() {
      *
      * Give me the length of these tasks that didn't pass the test inside the parentheses
      */
-    function remainingTasks ()
+    function remainingTasksCalculation ()
     {
         return tasks.filter(task => !task.isComplete).length;
     }
+
+    /**
+     * useMemo Hook returns a memoized value
+     *
+     * Think of memoization as caching a value so that it does not need to be recalculated everytime
+     * It stores the result so that it can be retrieved without repeating the calculation
+     */
+    const remainingTasks = useMemo(remainingTasksCalculation, [tasks]);
 
     /**
      * Clear all the tasks that are completed
@@ -200,11 +211,39 @@ function App() {
     }
 
     /**
+     * useEffect Hook will perform side effects in the component
+     *
+     * The empty array specifies that I just want the useEffect to be hit when the component is mounted
+     */
+    useEffect(() => { // This is just focusing on the first input when the component is mounted
+        nameInputElement.current.focus() // so the user may get triggered to put their name
+    }, []);
+
+    /**
      *  JSX
      */
     return (
         <div className="task-app-container">
             <header className="task-app">
+                <div className="name-container">
+                    <h2>What is your name?</h2>
+                    <button onClick={() => nameInputElement.current.focus() }>Get ref</button>
+                    <form action="">
+                        <input
+                            type="text"
+                            ref={nameInputElement}
+                            className="task-input"
+                            placeholder="What is your name?"
+                            value={name}
+                            onChange={event => setName(event.target.value)}
+                        />
+                    </form>
+                    {name &&
+                        <p className="name-label">
+                        Hello, {name}
+                        </p>
+                    }
+                </div>
                 <h2>Task App</h2>
                 {/*Here I am passing the addTask function as a prop to the child component*/}
                 <TaskForm addTask={addTask}/>

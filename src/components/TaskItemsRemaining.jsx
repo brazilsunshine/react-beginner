@@ -7,13 +7,13 @@ import PropTypes from 'prop-types';
  * It is an optional tool. It's just to check the props' types and some others information
  */
 TaskItemsRemaining.propTypes = {
-    remainingTasks: PropTypes.func.isRequired,
+    remainingTasks: PropTypes.number.isRequired,
 }
 
 function TaskItemsRemaining (props) { // accepting remainingTasks as a prop from the parent component <TaskList />
     return (
         <span>
-            {props.remainingTasks()} Items remaining
+            {props.remainingTasks} Items remaining
         </span>
     )
 }

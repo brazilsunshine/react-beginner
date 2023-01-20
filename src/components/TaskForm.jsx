@@ -32,12 +32,13 @@ function TaskForm (props) { // receiving the addTask function as a prop from the
      */
     function handleSubmit (event)
     {
-        event.preventDefault(); // this will prevent the browser from reload when a task is added
+        event.preventDefault(); // this will prevent the browser from reloading when a task is added
 
         if (taskInput.trim().length === 0) // if the whitespace trim() is equal to zero we don't wanna to anything.
         { // this is to prevent the user from adding a whitespace as a task
             return;
         }
+        console.log({event});
 
         props.addTask(taskInput); // accessing the addTask function from the props to retrieve whatever the user types in on the input
 

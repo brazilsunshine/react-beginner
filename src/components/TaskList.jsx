@@ -18,7 +18,7 @@ TaskList.propTypes = {
     updateTask: PropTypes.func.isRequired,
     cancelEditingTask: PropTypes.func.isRequired,
     deleteTask: PropTypes.func.isRequired,
-    remainingTasks: PropTypes.func.isRequired,
+    remainingTasks: PropTypes.number.isRequired,
     clearCompleted: PropTypes.func.isRequired,
     completeAllTasks: PropTypes.func.isRequired,
 }
@@ -35,7 +35,7 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                         className="task-item-container"
                     >
                         <div className="task-item">
-                            {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
+                            {/*react: everytime a method you're passing in has a parameter, make sure you pass it as a callback*/}
                             <input
                                 type="checkbox"
                                 onChange={() => props.completeTask(task.id)}
