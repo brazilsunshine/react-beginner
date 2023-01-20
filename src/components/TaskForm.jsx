@@ -1,22 +1,17 @@
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext, useState} from 'react';
+import {TasksContext} from "../context/TasksContext";
 
-/**
- * Check the props' types and check if this prop is required to have in our component
- *
- * It is an optional tool. It's just to check the props' types and some others information
- */
-TaskForm.propTypes = {
-    addTask: PropTypes.func.isRequired,
-}
 
-function TaskForm (props) { // receiving the addTask function as a prop from the parent component
+function TaskForm () { // receiving the addTask function as a prop from the parent component
     /**
      * Think this as getters and setters in vuex
      *
      * Where it's going to 'get' the taskInput and the 'set' setTaskInput
      */
     const [taskInput, setTaskInput] = useState('');
+
+    const { tasks, setTasks, idForTask, setIdForTask } = useContext(TasksContext); // receiving the value from TasksContext
+
 
     /**
      * Function to handle event when a user adds a task
@@ -30,7 +25,7 @@ function TaskForm (props) { // receiving the addTask function as a prop from the
     /**
      * A user has added a new task
      */
-    function handleSubmit (event)
+    function addTask (event)
     {
         event.preventDefault(); // this will prevent the browser from reloading when a task is added
 
@@ -40,13 +35,21 @@ function TaskForm (props) { // receiving the addTask function as a prop from the
         }
         console.log({event});
 
-        props.addTask(taskInput); // accessing the addTask function from the props to retrieve whatever the user types in on the input
+        setTasks([...tasks, { // creating a new array with spread syntax and add values to the new array
+            id: idForTask,
+            title: taskInput,
+            isComplete: false,
+        }]);
+
+        setIdForTask(prevIdForTask => prevIdForTask + 1); // setIdForTask(idForTask + 1);
+        // in react this is how we assert value to something
+        // setTasks will now become whatever is inside the parentheses
 
         setTaskInput('');
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={addTask}>
             <input
                 type="text"
                 value={taskInput}

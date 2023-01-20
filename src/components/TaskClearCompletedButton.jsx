@@ -1,19 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {TasksContext} from "../context/TasksContext";
 
-/**
- * Check the props' types and check if this prop is required to have in our component
- *
- * It is an optional tool. It's just to check the props' types and some others information
- */
-TaskClearCompletedButton.propTypes = {
-    clearCompleted: PropTypes.func.isRequired,
-}
 
-function TaskClearCompletedButton (props) {
+function TaskClearCompletedButton ()
+{
+    const { tasks, setTasks } = useContext(TasksContext); // receiving the value from TasksContext
+
+    /**
+     * Clear all the tasks that are completed
+     */
+    function clearCompleted ()
+    {
+        // 1. setTasks array will become the new copy of tasks array; so the original tasks array won't be affected
+        // 2. The task that is not completed will pass the test inside the parentheses
+        setTasks([... tasks].filter(task => !task.isComplete))
+    }
     return (
         <button
-            onClick={props.clearCompleted}
+            onClick={clearCompleted}
             className="button"
         >
             Clear completed

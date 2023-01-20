@@ -1,19 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {TasksContext} from "../context/TasksContext";
 
-/**
- * Check the props' types and check if this prop is required to have in our component
- *
- * It is an optional tool. It's just to check the props' types and some others information
- */
-CheckAll.propTypes = {
-    completeAllTasks: PropTypes.func.isRequired,
-}
 
-function CheckAll (props) {
+function CheckAll ()
+{
+    const { tasks, setTasks } = useContext(TasksContext); // receiving the value from TasksContext
+
+
+    /**
+     * Check all tasks
+     */
+    function checkAllTasks (id)
+    {
+        const updatedTasks = tasks.map(task =>
+        {
+            task.isComplete = true;
+
+            return task;
+        })
+
+        setTasks(updatedTasks);
+        // in react this is how we assert value to something
+        // setTasks will now become the variable updatedTasks
+    }
+
     return (
         <div
-            onClick={props.completeAllTasks}
+            onClick={checkAllTasks}
             className="button"
         >
             Check All

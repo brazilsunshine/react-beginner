@@ -1,19 +1,31 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext, useMemo} from 'react';
+import {TasksContext} from "../context/TasksContext";
 
-/**
- * Check the props' types and check if this prop is required to have in our component
- *
- * It is an optional tool. It's just to check the props' types and some others information
- */
-TaskItemsRemaining.propTypes = {
-    remainingTasks: PropTypes.number.isRequired,
-}
+function TaskItemsRemaining () // accepting remainingTasks as a prop from the parent component <TaskList />
+{
+    const { tasks } = useContext(TasksContext); // receiving the value from TasksContext
 
-function TaskItemsRemaining (props) { // accepting remainingTasks as a prop from the parent component <TaskList />
+    /**
+     * The task that is not completed will pass the test inside the parentheses
+     *
+     * Give me the length of these tasks that didn't pass the test inside the parentheses
+     */
+    function remainingTasksCalculation ()
+    {
+        return tasks.filter(task => !task.isComplete).length;
+    }
+
+    /**
+     * useMemo Hook returns a memoized value
+     *
+     * Think of memoization as caching a value so that it does not need to be recalculated everytime
+     * It stores the result so that it can be retrieved without repeating the calculation
+     */
+    const remainingTasks = useMemo(remainingTasksCalculation, [tasks]);
+
     return (
         <span>
-            {props.remainingTasks} Items remaining
+            {remainingTasks} Items remaining
         </span>
     )
 }

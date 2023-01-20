@@ -1,38 +1,117 @@
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
 import TaskItemsRemaining from './TaskItemsRemaining';
 import TaskClearCompletedButton from './TaskClearCompletedButton';
 import CheckAll from "./CheckAll";
 import TaskFilters from "./TaskFilters";
 import useToggle from "../hooks/useToggle";
+import {TasksContext} from "../context/TasksContext";
 
-/**
- * Check the props' types and check if this prop is required to have in our component
- *
- * It is an optional tool. It's just to check the props' types and some others information
- */
-TaskList.propTypes = {
-    tasks: PropTypes.array.isRequired,
-    tasksFiltered: PropTypes.func.isRequired,
-    completeTask: PropTypes.func.isRequired,
-    markAsEditing: PropTypes.func.isRequired,
-    updateTask: PropTypes.func.isRequired,
-    cancelEditingTask: PropTypes.func.isRequired,
-    deleteTask: PropTypes.func.isRequired,
-    remainingTasks: PropTypes.number.isRequired,
-    clearCompleted: PropTypes.func.isRequired,
-    completeAllTasks: PropTypes.func.isRequired,
-}
-
-function TaskList(props) {  // receiving all the props coming in from the parent component
+function TaskList() // receiving all the props coming in from the parent component
+{
+    const { tasks, setTasks, tasksFiltered } = useContext(TasksContext);
     const [isButtonFeaturesOneVisible, setIsButtonFeaturesOneVisible] = useToggle(); // useToggle is a custom hook that we created
     const [isButtonFeaturesTwoVisible, setIsButtonFeaturesTwoVisible] = useToggle(); // useToggle is a custom hook that we created
-    const [filter, setFilter] = useState('all');
+
+    /**
+     * Delete a task from my task list
+     */
+    function deleteTask(id)
+    {
+        // 1. make new array of tasks
+        // 2. filter method will receive any task
+        // 3. the task.id that doesn't match the id coming from the function, will remain on the list
+        // filtre as tasks que nao forem iguais a id vindo da function
+        setTasks([... tasks].filter(task => task.id !== id))
+    }
+
+    /**
+     * Complete task from todo list
+     */
+    function completeTask(id)
+    {
+        const updatedTasks = tasks.map(task => {
+            if (task.id === id)
+            {
+                task.isComplete = !task.isComplete
+            }
+
+            return task;
+        })
+
+        setTasks(updatedTasks);
+        // in react this is how we assert value to something
+        // setTasks will now become the variable updatedTasks
+    }
+
+    /**
+     * On double-click on the task set isEditing to true and show the <input> tag
+     */
+    function markAsEditing(id)
+    {
+        const updatedTasks = tasks.map(task => {
+            if (task.id === id)
+            {
+                task.isEditing = true;
+            }
+
+            return task;
+        })
+
+        setTasks(updatedTasks);
+        // in react this is how we assert value to something
+        // setTasks will now become the variable updatedTasks
+    }
+
+    /**
+     * Update task and set isEditing to false and show the <span> tag
+     */
+    function updateTask(event, id)
+    {
+        const updatedTasks = tasks.map(task => {
+            if (task.id === id)
+            {
+                if (event.target.value.trim().length === 0) // if the whitespace trim() is equal to zero then just return the old task.
+                { // this is to prevent the user from adding a whitespace as a task
+                    task.isEditing = false;
+                    return task;
+                }
+
+                task.title = event.target.value
+
+                task.isEditing = false;
+            }
+
+            return task;
+        })
+
+        setTasks(updatedTasks)
+        // in react this is how we assert value to something
+        // setTasks will now become the variable updatedTasks
+    }
+
+    /**
+     * If escape key is pressed cancel the editing task and set isEditing to false
+     */
+    function cancelEditingTask(id)
+    {
+        const updatedTasks = tasks.map(task => {
+            if (task.id === id)
+            {
+                task.isEditing = false;
+            }
+
+            return task;
+        })
+
+        setTasks(updatedTasks)
+        // in react this is how we assert value to something
+        // setTasks will now become the variable updatedTasks
+    }
 
     return (
         <div>
             <ul className="task-list">
-                {props.tasksFiltered(filter).map((task, index ) => (
+                {tasksFiltered().map((task, index ) => (
                     <li
                         key={task.id}
                         className="task-item-container"
@@ -41,7 +120,7 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                             {/*react: everytime a method you're passing in has a parameter, make sure you pass it as a callback*/}
                             <input
                                 type="checkbox"
-                                onChange={() => props.completeTask(task.id)}
+                                onChange={() => completeTask(task.id)}
                                 checked={task.isComplete ? true : false}
                             />
 
@@ -49,7 +128,7 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                             {/*If !isEditing is true I want to show the span, if it's false I want to show the input */}
                             { !task.isEditing ? (
                                 <span
-                                    onDoubleClick={() => props.markAsEditing(task.id)}
+                                    onDoubleClick={() => markAsEditing(task.id)}
                                     className={`task-item-label ${task.isComplete 
                                         ? 'line-through' 
                                         : ''
@@ -60,14 +139,14 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                             ) : (
                                 <input
                                     type="text"
-                                    onBlur={(event) => props.updateTask(event, task.id)}
+                                    onBlur={(event) => updateTask(event, task.id)}
                                     onKeyDown={event => {
                                         if (event.key === 'Enter')
                                         {
-                                            props.updateTask(event, task.id);
+                                            updateTask(event, task.id);
                                         } else if (event.key === 'Escape')
                                         {
-                                            props.cancelEditingTask(task.id);
+                                            cancelEditingTask(task.id);
                                         }
                                     }}
                                     className="task-item-input"
@@ -80,7 +159,7 @@ function TaskList(props) {  // receiving all the props coming in from the parent
 
                         {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
                         <button
-                            onClick={() => props.deleteTask(task.id)}
+                            onClick={() => deleteTask(task.id)}
                             className="x-button"
                         >
                             <i className="fa-solid fa-xmark"></i>
@@ -108,10 +187,10 @@ function TaskList(props) {  // receiving all the props coming in from the parent
             {isButtonFeaturesOneVisible && (
                 <div className="check-all-container">
                     <div>
-                        <CheckAll completeAllTasks={props.completeAllTasks}/>
+                        <CheckAll />
                     </div>
                     <div>
-                        <TaskItemsRemaining remainingTasks={props.remainingTasks}/>
+                        <TaskItemsRemaining />
                     </div>
                 </div>
             )}
@@ -120,13 +199,11 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                 <div className="other-buttons-container">
                     <div>
                         <TaskFilters
-                            tasksFiltered={props.tasksFiltered}
-                            filter={filter}
-                            setFilter={setFilter}
+                            tasksFiltered={tasksFiltered}
                         />
                     </div>
                     <div>
-                        <TaskClearCompletedButton clearCompleted={props.clearCompleted}/>
+                        <TaskClearCompletedButton />
                     </div>
                 </div>
             )}
