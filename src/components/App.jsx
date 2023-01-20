@@ -1,37 +1,42 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef} from "react";
 import '../App.css';
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import NoTasks from './NoTasks';
-import {logDOM} from "@testing-library/react";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 function App() {
     // think this as getters and setters in vuex
-    const [name, setName] = useState('');
+    // const [name, setName] = useState('');
+    const [name, setName] = useLocalStorage('name', '')
+
     const nameInputElement = useRef(null);
-    const [tasks, setTasks] = useState([
-        {
-            id: 1,
-            title: 'Finish my homework',
-            isComplete: false,
-            isEditing: false,
-        },
-        {
-            id: 2,
-            title: 'give sean a kiss',
-            isComplete: true,
-            isEditing: false,
-        },
-        {
-            id: 3,
-            title: 'Brush teeth',
-            isComplete: false,
-            isEditing: false,
-        },
-    ]);
+     const [tasks, setTasks] = useLocalStorage('tasks', []);
+
+    // const [tasks, setTasks] = useState([
+    //     {
+    //         id: 1,
+    //         title: 'Finish my homework',
+    //         isComplete: false,
+    //         isEditing: false,
+    //     },
+    //     {
+    //         id: 2,
+    //         title: 'give sean a kiss',
+    //         isComplete: true,
+    //         isEditing: false,
+    //     },
+    //     {
+    //         id: 3,
+    //         title: 'Brush teeth',
+    //         isComplete: false,
+    //         isEditing: false,
+    //     },
+    // ]);
 
     // think this as getters and setters in vuex
-    const [idForTask, setIdForTask] = useState(4);
+    // const [idForTask, setIdForTask] = useState(4);
+    const [idForTask, setIdForTask] = useLocalStorage('tasksId', 0);
 
     /**
      * Add a task to my task list
@@ -207,17 +212,38 @@ function App() {
         {
             return tasks.filter(task => task.isComplete);
         }
-
     }
 
     /**
-     * useEffect Hook will perform side effects in the component
+     * useEffect tells React that your component needs to do something when the component is mounted.
      *
      * The empty array specifies that I just want the useEffect to be hit when the component is mounted
+     *
+     * Retrieve 'name' value from localStorage when this component is mounted
      */
     useEffect(() => { // This is just focusing on the first input when the component is mounted
         nameInputElement.current.focus() // so the user may get triggered to put their name
+
+        // nullish coalescing (??) return empty string if its left side is null or undefined
+        // setName(JSON.parse(localStorage.getItem('name')) ?? '');
+        // The JSON.parse() parses a JSON string, and outputs the JavaScript value or object described by the string.
     }, []);
+
+    /**
+     * Set the name to become the input's value
+     *
+     * Save the name in the localStorage
+     */
+    function handleNameInput (event)
+    {
+        setName(event.target.value);
+
+        // localStorage.setItem('name', JSON.stringify(event.target.value))
+        // JSON.stringify() takes a JavaScript object and transforms it into a JSON string.
+        // localStorage doesn't store the object data into the localStorage, it needs Strings,
+    }
+
+
 
     /**
      *  JSX
@@ -227,7 +253,6 @@ function App() {
             <header className="task-app">
                 <div className="name-container">
                     <h2>What is your name?</h2>
-                    <button onClick={() => nameInputElement.current.focus() }>Get ref</button>
                     <form action="">
                         <input
                             type="text"
@@ -235,7 +260,7 @@ function App() {
                             className="task-input"
                             placeholder="What is your name?"
                             value={name}
-                            onChange={event => setName(event.target.value)}
+                            onChange={handleNameInput}
                         />
                     </form>
                     {name &&

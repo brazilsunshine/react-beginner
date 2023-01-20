@@ -4,6 +4,7 @@ import TaskItemsRemaining from './TaskItemsRemaining';
 import TaskClearCompletedButton from './TaskClearCompletedButton';
 import CheckAll from "./CheckAll";
 import TaskFilters from "./TaskFilters";
+import useToggle from "../hooks/useToggle";
 
 /**
  * Check the props' types and check if this prop is required to have in our component
@@ -24,7 +25,9 @@ TaskList.propTypes = {
 }
 
 function TaskList(props) {  // receiving all the props coming in from the parent component
-    const [filter, setFilter] = useState('all')
+    const [isButtonFeaturesOneVisible, setIsButtonFeaturesOneVisible] = useToggle(); // useToggle is a custom hook that we created
+    const [isButtonFeaturesTwoVisible, setIsButtonFeaturesTwoVisible] = useToggle(); // useToggle is a custom hook that we created
+    const [filter, setFilter] = useState('all');
 
     return (
         <div>
@@ -85,26 +88,48 @@ function TaskList(props) {  // receiving all the props coming in from the parent
                     </li>
                 ))}
             </ul>
-            <div className="check-all-container">
-                <div>
-                    <CheckAll completeAllTasks={props.completeAllTasks}/>
-                </div>
-                <div>
-                    <TaskItemsRemaining remainingTasks={props.remainingTasks}/>
-                </div>
+
+            <div className="toggles-container">
+                <button
+                    onClick={setIsButtonFeaturesOneVisible}
+                    className="button"
+                >
+                    Features One Toggle
+                </button>
+
+                <button
+                    onClick={setIsButtonFeaturesTwoVisible}
+                    className="button"
+                >
+                    Features Two Toggle
+                </button>
             </div>
-            <div className="other-buttons-container">
-                <div>
-                    <TaskFilters
-                        tasksFiltered={props.tasksFiltered}
-                        filter={filter}
-                        setFilter={setFilter}
-                    />
+
+            {isButtonFeaturesOneVisible && (
+                <div className="check-all-container">
+                    <div>
+                        <CheckAll completeAllTasks={props.completeAllTasks}/>
+                    </div>
+                    <div>
+                        <TaskItemsRemaining remainingTasks={props.remainingTasks}/>
+                    </div>
                 </div>
-                <div>
-                    <TaskClearCompletedButton clearCompleted={props.clearCompleted}/>
+            )}
+
+            {isButtonFeaturesTwoVisible && (
+                <div className="other-buttons-container">
+                    <div>
+                        <TaskFilters
+                            tasksFiltered={props.tasksFiltered}
+                            filter={filter}
+                            setFilter={setFilter}
+                        />
+                    </div>
+                    <div>
+                        <TaskClearCompletedButton clearCompleted={props.clearCompleted}/>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }
