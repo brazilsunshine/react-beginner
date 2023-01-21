@@ -5,6 +5,7 @@ import CheckAll from "./CheckAll";
 import TaskFilters from "./TaskFilters";
 import useToggle from "../hooks/useToggle";
 import {TasksContext} from "../context/TasksContext";
+import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 function TaskList() // receiving all the props coming in from the parent component
 {
@@ -21,7 +22,11 @@ function TaskList() // receiving all the props coming in from the parent compone
         // 2. filter method will receive any task
         // 3. the task.id that doesn't match the id coming from the function, will remain on the list
         // filtre as tasks que nao forem iguais a id vindo da function
-        setTasks([... tasks].filter(task => task.id !== id))
+
+        // I want to keep all the tasks expect the one that matches the id
+        // if the task.id is not equals to the id deleted by the user then I want to include this task on my new array;
+        // I want to keep the task.id that does not match the id deleted by the user
+        setTasks([...tasks].filter(task => task.id !== id))
     }
 
     /**
@@ -110,63 +115,64 @@ function TaskList() // receiving all the props coming in from the parent compone
 
     return (
         <div>
-            <ul className="task-list">
+            {/*component here means the element <ul>*/}
+            <TransitionGroup component="ul" className="task-list">
                 {tasksFiltered().map((task, index ) => (
-                    <li
-                        key={task.id}
-                        className="task-item-container"
-                    >
-                        <div className="task-item">
-                            {/*react: everytime a method you're passing in has a parameter, make sure you pass it as a callback*/}
-                            <input
-                                type="checkbox"
-                                onChange={() => completeTask(task.id)}
-                                checked={task.isComplete ? true : false}
-                            />
+                    <CSSTransition key={task.id} timeout={300} classNames="slide-horizontal">
+                        <li className="task-item-container">
+                            <div className="task-item">
 
-                            {/*{ !task.isEditing ? (span) : (input)}*/}
-                            {/*If !isEditing is true I want to show the span, if it's false I want to show the input */}
-                            { !task.isEditing ? (
-                                <span
-                                    onDoubleClick={() => markAsEditing(task.id)}
-                                    className={`task-item-label ${task.isComplete 
-                                        ? 'line-through' 
-                                        : ''
-                                    }`}
-                                >
-                                {task.title}
-                            </span>
-                            ) : (
+                                {/*react: everytime a method you're passing in has a parameter, make sure you pass it as a callback*/}
                                 <input
-                                    type="text"
-                                    onBlur={(event) => updateTask(event, task.id)}
-                                    onKeyDown={event => {
-                                        if (event.key === 'Enter')
-                                        {
-                                            updateTask(event, task.id);
-                                        } else if (event.key === 'Escape')
-                                        {
-                                            cancelEditingTask(task.id);
-                                        }
-                                    }}
-                                    className="task-item-input"
-                                    defaultValue={task.title}
-                                    autoFocus
+                                    type="checkbox"
+                                    onChange={() => completeTask(task.id)}
+                                    checked={task.isComplete ? true : false}
                                 />
-                            )}
-                            {/* onBlur: Every time you get out of focus from the input field, the event will trigger. */}
-                        </div>
 
-                        {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
-                        <button
-                            onClick={() => deleteTask(task.id)}
-                            className="x-button"
-                        >
-                            <i className="fa-solid fa-xmark"></i>
-                        </button>
-                    </li>
+                                {/*{ !task.isEditing ? (span) : (input)}*/}
+                                {/*If !isEditing is true I want to show the span, if it's false I want to show the input */}
+                                { !task.isEditing ? (
+                                    <span
+                                        onDoubleClick={() => markAsEditing(task.id)}
+                                        className={`task-item-label ${task.isComplete 
+                                            ? 'line-through' 
+                                            : ''
+                                        }`}
+                                    >
+                                    {task.title}
+                                </span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        onBlur={(event) => updateTask(event, task.id)}
+                                        onKeyDown={event => {
+                                            if (event.key === 'Enter')
+                                            {
+                                                updateTask(event, task.id);
+                                            } else if (event.key === 'Escape')
+                                            {
+                                                cancelEditingTask(task.id);
+                                            }
+                                        }}
+                                        className="task-item-input"
+                                        defaultValue={task.title}
+                                        autoFocus
+                                    />
+                                )}
+                                {/* onBlur: Every time you get out of focus from the input field, the event will trigger. */}
+                            </div>
+
+                            {/*react: everytime a method you're passing in has a parameter, make sure you pass it has a callback*/}
+                            <button
+                                onClick={() => deleteTask(task.id)}
+                                className="x-button"
+                            >
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </li>
+                    </CSSTransition>
                 ))}
-            </ul>
+            </TransitionGroup>
 
             <div className="toggles-container">
                 <button
@@ -184,7 +190,13 @@ function TaskList() // receiving all the props coming in from the parent compone
                 </button>
             </div>
 
-            {isButtonFeaturesOneVisible && (
+            {/* 'in' is the condition; so if isButtonFeaturesOneVisible is true then do what's inside the CSSTransition tag */}
+            <CSSTransition
+                in={isButtonFeaturesOneVisible}
+                timeout={300}
+                classNames="slide-vertical"
+                unmountOnExit
+            >
                 <div className="check-all-container">
                     <div>
                         <CheckAll />
@@ -193,9 +205,15 @@ function TaskList() // receiving all the props coming in from the parent compone
                         <TaskItemsRemaining />
                     </div>
                 </div>
-            )}
+            </CSSTransition>
 
-            {isButtonFeaturesTwoVisible && (
+
+            <CSSTransition
+                in={isButtonFeaturesTwoVisible}
+                timeout={300}
+                classNames="slide-vertical"
+                unmountOnExit
+            >
                 <div className="other-buttons-container">
                     <div>
                         <TaskFilters
@@ -206,7 +224,7 @@ function TaskList() // receiving all the props coming in from the parent compone
                         <TaskClearCompletedButton />
                     </div>
                 </div>
-            )}
+            </CSSTransition>
         </div>
     )
 }

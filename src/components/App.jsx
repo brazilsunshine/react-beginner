@@ -5,6 +5,7 @@ import TaskList from "./TaskList";
 import NoTasks from './NoTasks';
 import useLocalStorage from "../hooks/useLocalStorage";
 import {TasksContext} from "../context/TasksContext";
+import {CSSTransition, SwitchTransition} from "react-transition-group";
 
 function App() {
     // think this as getters and setters in vuex
@@ -80,7 +81,7 @@ function App() {
                 tasksFiltered,
                 filter,
                 setFilter
-        }}
+            }}
         >
             <div className="task-app-container">
                 <header className="task-app">
@@ -96,21 +97,52 @@ function App() {
                                 onChange={handleNameInput}
                             />
                         </form>
-                        {name &&
+
+                        <CSSTransition
+                            in={name.length > 0}
+                            timeout={300}
+                            classNames="slide-vertical"
+                            unmountOnExit
+                        >
                             <p className="name-label">
-                            Hello, {name}
+                                Hello, {name}
                             </p>
-                        }
+                        </CSSTransition>
+
                     </div>
                     <h2>Task App</h2>
-                    {/*Here I am passing the addTask function as a prop to the child component*/}
                     <TaskForm />
 
-                    {/*passing these information as props to the TaskList child component*/}
-                    { tasks.length > 0
-                        ? <TaskList/>
-                        : <NoTasks />
-                    }
+                    <SwitchTransition mode="out-in">
+                        <CSSTransition
+                            key={tasks.length > 0}
+                            timeout={300}
+                            classNames="slide-vertical"
+                            unmountOnExit
+                        >
+                            { tasks.length > 0 ? <TaskList/> : <NoTasks />}
+                        </CSSTransition>
+                    </SwitchTransition>
+
+                    {/* 'in' is the condition; so if tasks.length > 0 is true then do what's inside the CSSTransition tag */}
+                    {/*<CSSTransition*/}
+                    {/*    in={tasks.length > 0}*/}
+                    {/*    timeout={300}*/}
+                    {/*    classNames="slide-vertical"*/}
+                    {/*    unmountOnExit*/}
+                    {/*>*/}
+                    {/*    <TaskList />*/}
+                    {/*</CSSTransition>*/}
+
+                    {/*/!* 'in' is the condition; so if tasks.length === 0 is true then do what's inside the CSSTransition tag *!/*/}
+                    {/*<CSSTransition*/}
+                    {/*    in={tasks.length === 0}*/}
+                    {/*    timeout={300}*/}
+                    {/*    classNames="slide-vertical"*/}
+                    {/*    unmountOnExit*/}
+                    {/*>*/}
+                    {/*    <NoTasks />*/}
+                    {/*</CSSTransition>*/}
               </header>
             </div>
         </TasksContext.Provider>
