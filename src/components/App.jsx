@@ -83,68 +83,66 @@ function App() {
                 setFilter
             }}
         >
-            <div className="task-app-container">
-                <header className="task-app">
-                    <div className="name-container">
-                        <h2>What is your name?</h2>
-                        <form action="">
-                            <input
-                                type="text"
-                                ref={nameInputElement}
-                                className="task-input"
-                                placeholder="What is your name?"
-                                value={name}
-                                onChange={handleNameInput}
-                            />
-                        </form>
+            <header className="task-app">
+                <div className="name-container">
+                    <h2>What is your name?</h2>
+                    <form action="">
+                        <input
+                            type="text"
+                            ref={nameInputElement}
+                            className="task-input"
+                            placeholder="What is your name?"
+                            value={name}
+                            onChange={handleNameInput}
+                        />
+                    </form>
 
-                        <CSSTransition
-                            in={name.length > 0}
-                            timeout={300}
-                            classNames="slide-vertical"
-                            unmountOnExit
-                        >
-                            <p className="name-label">
-                                Hello, {name}
-                            </p>
-                        </CSSTransition>
+                    <CSSTransition
+                        in={name.length > 0}
+                        timeout={300}
+                        classNames="slide-vertical"
+                        unmountOnExit
+                    >
+                        <p className="name-label">
+                            Hello, {name}
+                        </p>
+                    </CSSTransition>
 
-                    </div>
-                    <h2>Task App</h2>
-                    <TaskForm />
+                </div>
+                <h2>Task App</h2>
+                <TaskForm />
 
-                    <SwitchTransition mode="out-in">
-                        <CSSTransition
-                            key={tasks.length > 0}
-                            timeout={300}
-                            classNames="slide-vertical"
-                            unmountOnExit
-                        >
-                            { tasks.length > 0 ? <TaskList/> : <NoTasks />}
-                        </CSSTransition>
-                    </SwitchTransition>
+                <SwitchTransition mode="out-in">
+                    <CSSTransition
+                        key={tasks.length > 0}
+                        timeout={300}
+                        classNames="slide-vertical"
+                        unmountOnExit
+                    >
+                        { tasks.length > 0 ? <TaskList/> : <NoTasks />}
+                    </CSSTransition>
+                </SwitchTransition>
 
-                    {/* 'in' is the condition; so if tasks.length > 0 is true then do what's inside the CSSTransition tag */}
-                    {/*<CSSTransition*/}
-                    {/*    in={tasks.length > 0}*/}
-                    {/*    timeout={300}*/}
-                    {/*    classNames="slide-vertical"*/}
-                    {/*    unmountOnExit*/}
-                    {/*>*/}
-                    {/*    <TaskList />*/}
-                    {/*</CSSTransition>*/}
+                {/* 'in' is the condition; so if tasks.length > 0 is true then do what's inside the CSSTransition tag */}
+                {/*<CSSTransition*/}
+                {/*    in={tasks.length > 0}*/}
+                {/*    timeout={300}*/}
+                {/*    classNames="slide-vertical"*/}
+                {/*    unmountOnExit*/}
+                {/*>*/}
+                {/*    <TaskList />*/}
+                {/*</CSSTransition>*/}
 
-                    {/*/!* 'in' is the condition; so if tasks.length === 0 is true then do what's inside the CSSTransition tag *!/*/}
-                    {/*<CSSTransition*/}
-                    {/*    in={tasks.length === 0}*/}
-                    {/*    timeout={300}*/}
-                    {/*    classNames="slide-vertical"*/}
-                    {/*    unmountOnExit*/}
-                    {/*>*/}
-                    {/*    <NoTasks />*/}
-                    {/*</CSSTransition>*/}
-              </header>
-            </div>
+                {/*/!* 'in' is the condition; so if tasks.length === 0 is true then do what's inside the CSSTransition tag *!/*/}
+                {/*<CSSTransition*/}
+                {/*    in={tasks.length === 0}*/}
+                {/*    timeout={300}*/}
+                {/*    classNames="slide-vertical"*/}
+                {/*    unmountOnExit*/}
+                {/*>*/}
+                {/*    <NoTasks />*/}
+                {/*</CSSTransition>*/}
+          </header>
         </TasksContext.Provider>
     );
 }

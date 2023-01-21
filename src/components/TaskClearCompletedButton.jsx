@@ -13,7 +13,7 @@ function TaskClearCompletedButton ()
     {
         // 1. setTasks array will become the new copy of tasks array; so the original tasks array won't be affected
         // 2. The task that is not completed will pass the test inside the parentheses
-        setTasks([... tasks].filter(task => !task.isComplete))
+        setTasks([...tasks].filter(task => !task.isComplete))
     }
     return (
         <button
